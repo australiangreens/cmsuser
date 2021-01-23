@@ -47,6 +47,19 @@ class CRM_CivirulesConditions_Cmsuser_HasAccount extends CRM_Civirules_Condition
   }
 
   /**
+   * Returns a redirect url to extra data input from the user after adding a condition
+   *
+   * Return false if you do not need extra data input
+   *
+   * @param int $ruleConditionId
+   *
+   * @return bool|string
+   */
+  public function getExtraDataInputUrl(int $ruleConditionId) {
+    return FALSE;
+  }
+
+  /**
    * This function validates whether this condition works with the selected trigger.
    *
    * @param CRM_Civirules_Trigger $trigger
