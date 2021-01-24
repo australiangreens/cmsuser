@@ -1,11 +1,13 @@
 <?php
+
+use CRM_Cmsuser_ExtensionUtil as E;
+
 /**
  * Class for CiviRules Cmsuser HasAccount condition
  *
- * @author MJW Consulting <mjw@mjwconsult.co.uk>
+ * @author Matthew Wire (MJW) <mjw@mjwconsult.co.uk>
  * @license AGPL-3.0
  */
-
 class CRM_CivirulesConditions_Cmsuser_HasAccount extends CRM_Civirules_Condition {
 
   protected $conditionParams = [];
@@ -31,19 +33,35 @@ class CRM_CivirulesConditions_Cmsuser_HasAccount extends CRM_Civirules_Condition
    * @return bool
    */
   public function isConditionValid(CRM_Civirules_TriggerData_TriggerData $triggerData): bool {
-    $isConditionValid = FALSE;
-    $entityID = $triggerData->getEntityId();
+    $entityID = $triggerData->getContactId();
 
     if (empty($entityID)) {
       return FALSE;
     }
 
-    $cmsuser = civicrm_api3('Cmsuser', 'get', ['contact_id' => $entityID]);
-    if (!empty($cmsuser['id'])) {
-      $isConditionValid = TRUE;
+    // Cmsuser.get returns exception if no ufmatch record found
+    try {
+      $cmsuser = civicrm_api3('Cmsuser', 'get', ['contact_id' => $entityID]);
+    }
+    catch (Exception $e) {
+      $cmsuser = FALSE;
     }
 
-    return $isConditionValid;
+    switch ($this->conditionParams['operator']) {
+      case 0:
+        // Contact has a CMS account
+        if (!empty($cmsuser['id'])) {
+          return TRUE;
+        }
+
+      case 1:
+        // Contact does not have a CMS account
+        if (empty($cmsuser['id'])) {
+          return TRUE;
+        }
+    }
+
+    return FALSE;
   }
 
   /**
@@ -56,10 +74,23 @@ class CRM_CivirulesConditions_Cmsuser_HasAccount extends CRM_Civirules_Condition
    * @return bool|string
    */
   public function getExtraDataInputUrl(int $ruleConditionId) {
-    return FALSE;
+    return CRM_Utils_System::url('civicrm/civirules/conditions/cmsuser_hasaccount',
+      "rule_condition_id={$ruleConditionId}&entity=contact");
   }
 
   /**
+   * Method to get operators
+   *
+   * @return array
+   */
+  public static function getOperatorOptions() {
+    return [
+      0 => E::ts('Has CMS Account'),
+      1 => E::ts('Does not have CMS Account')
+    ];
+  }
+
+    /**
    * This function validates whether this condition works with the selected trigger.
    *
    * @param CRM_Civirules_Trigger $trigger
@@ -72,6 +103,26 @@ class CRM_CivirulesConditions_Cmsuser_HasAccount extends CRM_Civirules_Condition
       return TRUE;
     }
     return FALSE;
+  }
+
+  /**
+   * Returns a user friendly text explaining the condition params
+   * e.g. 'Older than 65'
+   *
+   * @return string
+   */
+  public function userFriendlyConditionParams() {
+    switch ($this->conditionParams['operator']) {
+      case 0:
+        $operator = self::getOperatorOptions()[0];
+        break;
+
+      case 1:
+        $operator = self::getOperatorOptions()[1];
+        break;
+    }
+
+    return "Contact {$operator}";
   }
 
 }

@@ -101,7 +101,7 @@ function cmsuser_civicrm_managed(&$entities) {
   $conditions = civicrm_api3('CiviRuleCondition', 'get', ['name' => ['IN' => ['cmsuser_get']]]);
   if (empty($conditions['values'])) {
     civicrm_api3('CiviRuleCondition', 'create', [
-      'label' => 'Contact has CMS user',
+      'label' => 'Contact has (not) a CMS user',
       'name' => 'cmsuser_get',
       'class_name' => 'CRM_CivirulesConditions_Cmsuser_HasAccount',
       'is_active' => 1,
