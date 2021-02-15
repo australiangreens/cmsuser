@@ -21,10 +21,15 @@ function _civicrm_api3_cmsuser_create_spec(&$params) {
     'type' => CRM_Utils_Type::T_STRING,
   ];
   $params['contactID'] = [
-    'title' => 'Contact ID',
-    'description' => 'CiviCRM contact ID',
+    'title' => E::ts('Contact ID'),
+    'description' => E::ts('CiviCRM contact ID'),
     'api.required' => TRUE,
     'type' => CRM_Utils_Type::T_INT,
+  ];
+  $params['notify'] = [
+    'title' => E::ts('Notify User'),
+    'description' => E::ts('Send an email to the user to notify them of account creation (drupal7/backdrop only).'),
+    'type' => CRM_Utils_Type::T_BOOLEAN,
   ];
 }
 
@@ -70,6 +75,7 @@ function civicrm_api3_cmsuser_create($params) {
     'cms_name' => $params['cms_name'],
     'cms_pass' => $params['cms_pass'],
     'contactID' => $params['contactID'],
+    'notify' => $params['notify'] ?? 1,
   ];
 
   $ufID = CRM_Core_BAO_CMSUser::create($cmsUserParams, 'email');
