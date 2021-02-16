@@ -26,11 +26,6 @@ function _civicrm_api3_cmsuser_create_spec(&$params) {
     'api.required' => TRUE,
     'type' => CRM_Utils_Type::T_INT,
   ];
-  $params['notify'] = [
-    'title' => E::ts('Notify User'),
-    'description' => E::ts('Send an email to the user to notify them of account creation (drupal7/backdrop only).'),
-    'type' => CRM_Utils_Type::T_BOOLEAN,
-  ];
 }
 
 /**
@@ -75,11 +70,15 @@ function civicrm_api3_cmsuser_create($params) {
     'cms_name' => $params['cms_name'],
     'cms_pass' => $params['cms_pass'],
     'contactID' => $params['contactID'],
-    'notify' => $params['notify'] ?? 1,
   ];
 
   $ufID = CRM_Core_BAO_CMSUser::create($cmsUserParams, 'email');
   if ($ufID) {
+    if (CRM_Core_Config::singleton()->userFramework === 'Drupal') {
+      // Send account activated email
+      $account = user_load($ufID, TRUE);
+      _user_mail_notify('status_activated', $account);
+    }
     return civicrm_api3_create_success(['ufmatch_id' => $ufID], $params);
   }
 
