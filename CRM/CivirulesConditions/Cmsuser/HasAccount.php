@@ -73,7 +73,7 @@ class CRM_CivirulesConditions_Cmsuser_HasAccount extends CRM_Civirules_Condition
    *
    * @return bool|string
    */
-  public function getExtraDataInputUrl(int $ruleConditionId) {
+  public function getExtraDataInputUrl($ruleConditionId) {
     return CRM_Utils_System::url('civicrm/civirules/conditions/cmsuser_hasaccount',
       "rule_condition_id={$ruleConditionId}&entity=contact");
   }
