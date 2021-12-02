@@ -1,6 +1,6 @@
 {
      "name": "australian_greens/cmsuser",
-     "type": "civicrm-ext",
+     "type": "drupal-module",
      "description": "CiviCRM extension to add CMS user actions and API for CiviRules",
      "require": {
        "composer/installers": "~1.0"
